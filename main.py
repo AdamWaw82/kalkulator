@@ -3,7 +3,18 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 def validate_value( value ):
-    return str(value).isnumeric()
+    # próbowałem 
+    # str(value).isdigit()
+    # str(value).isnumeric()
+    # str(value).isdecimal()
+    # ale i tak jak podałem zeminnoprzecinkową wartość to zwracał że to nie liczba :/
+    # więc skończyłem tak: 
+
+    try:
+        fl_repr = float(value)
+        return True
+    except:
+        return False
 
 def get_user_values(user_choice: int):
     values = []
@@ -21,29 +32,31 @@ def get_user_values(user_choice: int):
             values.append(float(value))
             index += 1
         else:
-            logging.info(f"Podana wartość nie jest liczb2ą: {value}")
+            logging.info(f"Podana wartość nie jest liczbą: {value}")
 
-        # if user_choice in [2,4] and len(values) == 2:
-        #    break
+        if user_choice in [2,4] and len(values) == 2:
+           break
 
     if len(values) < 2:
         logging.info(f"Musisz podać przynajmniej 2 liczby do wykonania działania")
 
-    if user_choice == 1:
-        logging.info( dodawanie(values) )
-    elif user_choice == 2:
-        logging.info( odejmowanie(values) )
-    elif user_choice == 3:
-        logging.info( mnozenie(values) )
-    elif user_choice == 4:
-        logging.info( dzielenie(values) )
+    operations = {
+        1: dodawanie,
+        2: odejmowanie,
+        3: mnozenie,
+        4: dzielenie
+    }
+
+    if user_choice in operations:
+        result = operations[user_choice](values)
+        logging.info(f"Wynik działania to: {result}")
+    
 
 
 def operation_informator(value_list):
     oper = ""
     for elem in value_list:
         oper += f"{elem} i "
-
     return oper[:-3]
 
 def dodawanie(value_list: list):
@@ -70,7 +83,11 @@ def dzielenie(value_list):
 
     result = value_list[0]
     for value in value_list[1:]:
-        result /= value
+        if value > 0:
+            result /= value
+        else:
+            logging.error(f"Pamiętaj holero nie dziel przez 0")
+            exit()
     return result
 
 if __name__ == "__main__":
@@ -79,4 +96,4 @@ if __name__ == "__main__":
     if user_choice.isnumeric() and int(user_choice) in range(1, 5):
         get_user_values( int(user_choice) )
     else:
-        logging.info(f"Dokonałeś błędnego wyboru: {user_choice}")
+        logging.info(f"Dokonałeś/aś błędnego wyboru: {user_choice}")
